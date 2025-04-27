@@ -1,5 +1,5 @@
 opencv-python>=4.5.0
-cmake==3.27.4
+cmake==3.29.2
 dlib==19.24.2
 fpdf==1.7.2
 bz2file==0.98
