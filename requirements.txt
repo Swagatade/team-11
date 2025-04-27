@@ -1,15 +1,14 @@
 opencv-python>=4.5.0
-cmake==3.29.2
-fpdf==1.7.2
-bz2file==0.98
 dlib>=19.24.8
 numpy>=1.19.0
 matplotlib>=3.3.0
+fpdf>=1.7.2
 Pillow>=8.0.0
 streamlit>=1.0.0
 scikit-image>=0.17.2
 PyPDF2>=2.0.0
 urllib3>=1.26.0
+bz2file>=0.98
 pandas>=1.3.0
 openpyxl>=3.0.0
 requests>=2.25.0
