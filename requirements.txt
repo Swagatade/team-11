@@ -1,5 +1,5 @@
 opencv-python>=4.5.0
-dlib>=19.24.99
+dlib>=19.24.8
 numpy>=1.19.0
 matplotlib>=3.3.0
 fpdf>=1.7.2
