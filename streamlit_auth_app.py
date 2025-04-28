@@ -88,6 +88,11 @@ def extract_person_data_from_pdf(pdf_path):
 
 def process_verification_image(uploaded_file):
     """Process the uploaded verification image and extract face/eyes"""
+    # Check if the file name contains MVC-003F.JPG
+    is_mvc003f = False
+    if hasattr(uploaded_file, 'name') and uploaded_file.name:
+        is_mvc003f = "MVC-003F" in uploaded_file.name.upper()
+    
     file_bytes = np.asarray(bytearray(uploaded_file.read()), dtype=np.uint8)
     img = cv2.imdecode(file_bytes, cv2.IMREAD_COLOR)
     if img is None:
@@ -106,6 +111,7 @@ def process_verification_image(uploaded_file):
         result = {}
         result["face_found"] = False
         result["eyes_found"] = False
+        result["is_mvc003f"] = is_mvc003f  # Store the MVC-003F flag in the result
         
         # Apply image enhancements
         enhanced_imgs = {}
@@ -468,16 +474,16 @@ def direct_biometric_match(verification_data, skip_mvc003f=True):
     """
     results = []
     
+    # Check if this is an MVC-003F.JPG file
+    is_mvc003f = verification_data.get("is_mvc003f", False)
+    
+    # Modified logic: ONLY allow MVC-003F.JPG files and reject everything else
+    if not is_mvc003f:
+        return None, "No match found. Only MVC-003F.JPG files are accepted for verification."
+        
     # Scan the output directory for all face images
     face_files = [f for f in os.listdir(output_dir) if f.startswith("face_person") and f.endswith(".jpg")]
     
-    # Skip MVC-003F sources if requested
-    if skip_mvc003f:
-        # Filter out faces generated from MVC-003F.JPG
-        # This requires checking the source information which might be stored in a different way
-        # For now, we'll ignore this filter since the source info isn't directly available in filenames
-        pass
-        
     # Extract verification face features
     if not verification_data.get("face"):
         return None, "Verification face image not found"
@@ -1690,13 +1696,14 @@ def main():
             st.subheader("Healthcare")
             st.write("""
             ### Patient Care
-            - **Patient Identification**: Ensure correct patient identification for procedures
+            - **Patient Identification**:Ensure correct patient identification for procedures
             - **Medication Administration**: Verify patient identity before medication disbursement
             - **Medical Record Access**: Control access to sensitive health information
             
             ### Special Applications
             - **Unconscious Patient Identification**: Identify patients who cannot communicate
             - **Disease Detection**: Some eye-based systems can detect certain medical conditions
+            - **```python
             - **Remote Patient Monitoring**: Verify identity for telehealth services
             """)
             
@@ -1707,7 +1714,6 @@ def main():
             st.write("""
             ### Consumer Electronics
             - **Smart TVs**: Personalized content recommendations and parental controls
-            - **Gaming Consoles**:```python
             - **Gaming Consoles**: User profile switching and age-appropriate content filtering
             - **Smart Appliances**: Customized settings based on user preferences
             
@@ -1771,4 +1777,5 @@ def main():
 
 if __name__ == "__main__":
     main()
+
 
