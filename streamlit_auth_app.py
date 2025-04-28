@@ -358,7 +358,7 @@ def apply_adaptive_preprocessing(image):
         l, a, b = cv2.split(lab)
         l = clahe.apply(l)
         lab = cv2.merge([l, a, b])
-        img = cv2.cvtColor(lab, cv2.Lab2BGR)
+        img = cv2.cvtColor(lab, cv2.COLOR_Lab2BGR)
         
     elif brightness > 200:  # Very bright image
         # Reduce brightness and enhance contrast
@@ -1372,16 +1372,23 @@ def main():
                                     pie_labels = list(contributions.keys())
                                     pie_values = list(contributions.values())
                                     
-                                    # Create exploded pie chart
-                                    explode = [0.1 if label == 'Eye Bonus' else 0 for label in pie_labels]
-                                    pie_colors = ['#ff9999', '#66b3ff', '#99ff99', '#ffcc99', '#c2c2f0']
+                                    # Ensure all values are non-negative for the pie chart
+                                    pie_values = [max(0, val) for val in pie_values]
                                     
-                                    # Plot pie chart
-                                    ax3.pie(pie_values, labels=pie_labels, autopct='%1.1f%%', 
-                                            startangle=90, shadow=True, explode=explode, colors=pie_colors)
-                                    ax3.axis('equal')
-                                    ax3.set_title('Match Score Component Distribution')
-                                    st.pyplot(fig3)
+                                    # Skip the pie chart if all values are zero
+                                    if sum(pie_values) > 0:
+                                        # Create exploded pie chart
+                                        explode = [0.1 if label == 'Eye Bonus' else 0 for label in pie_labels]
+                                        pie_colors = ['#ff9999', '#66b3ff', '#99ff99', '#ffcc99', '#c2c2f0']
+                                        
+                                        # Plot pie chart
+                                        ax3.pie(pie_values, labels=pie_labels, autopct='%1.1f%%', 
+                                                startangle=90, shadow=True, explode=explode, colors=pie_colors)
+                                        ax3.axis('equal')
+                                        ax3.set_title('Match Score Component Distribution')
+                                        st.pyplot(fig3)
+                                    else:
+                                        st.warning("Cannot display component distribution - insufficient positive values.")
                                     
                                     # Show numerical metrics for reference
                                     metrics_col1, metrics_col2 = st.columns(2)
@@ -1700,13 +1707,13 @@ def main():
             st.write("""
             ### Consumer Electronics
             - **Smart TVs**: Personalized content recommendations and parental controls
+            - **Gaming Consoles**:```python
             - **Gaming Consoles**: User profile switching and age-appropriate content filtering
             - **Smart Appliances**: Customized settings based on user preferences
             
             ### Workplace IoT
             - **Smart Meeting Rooms**: Automatic room configuration based on identified participants
             - **Equipment Authorization**: Control access to dangerous or sensitive machinery
-            - **Attendance Systems**: Contactless time```python
             - **Attendance Systems**: Contactless time tracking for employees
             """)
             
